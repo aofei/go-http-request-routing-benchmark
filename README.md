@@ -2,9 +2,30 @@
 
 An HTTP request routing benchmark suite for Go.
 
+## Routers
+
+* [R2](https://github.com/aofei/r2)
+* [HttpRouter](https://github.com/julienschmidt/httprouter)
+* [Chi](https://github.com/go-chi/chi)
+* [gorilla/mux](https://github.com/gorilla/mux)
+
+A new router is only eligible to be added if it:
+
+* Is designed to replace [http.ServeMux](https://pkg.go.dev/net/http#ServeMux).
+* Supports path parameters.
+* Can be fully functional without any [`http.Handler`](https://pkg.go.dev/net/http#Handler) variant.
+
 ## Results
 
-```
+```bash
+$ go version
+go version go1.17.3 linux/amd64
+$ go list -m all | tail -n +2
+github.com/aofei/r2 v0.2.0
+github.com/go-chi/chi/v5 v5.0.6
+github.com/gorilla/mux v1.8.0
+github.com/julienschmidt/httprouter v1.3.0
+$ go test -bench .
 goos: linux
 goarch: amd64
 pkg: github.com/aofei/go-http-request-routing-benchmark
@@ -28,3 +49,22 @@ BenchmarkParseAPI_GorillaMux-8              7861            172459 ns/op        
 PASS
 ok      github.com/aofei/go-http-request-routing-benchmark      24.568s
 ```
+
+## Community
+
+If you want to discuss Go HTTP Request Routing Benchmark, or ask questions about
+it, simply post questions or ideas
+[here](https://github.com/aofei/go-http-request-routing-benchmark/issues).
+
+## Contributing
+
+If you want to help build Go HTTP Request Routing Benchmark, simply follow
+[this](https://github.com/aofei/go-http-request-routing-benchmark/wiki/Contributing)
+to send pull requests
+[here](https://github.com/aofei/go-http-request-routing-benchmark/pulls).
+
+## License
+
+This project is licensed under the MIT License.
+
+License can be found [here](LICENSE).
