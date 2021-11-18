@@ -235,7 +235,7 @@ var (
 		{"GET", "/gitignore/templates"},
 		{"GET", "/gitignore/templates/:name"},
 		{"GET", "/issues"},
-		{"GET", "/legacy/issues/search/:owner/:repository/:state/:keyword"},
+		{"GET", "/legacy/issues/search/:owner/:repo/:state/:keyword"},
 		{"GET", "/legacy/repos/search/:keyword"},
 		{"GET", "/legacy/user/email/:email"},
 		{"GET", "/legacy/user/search/:keyword"},

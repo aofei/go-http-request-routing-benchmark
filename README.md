@@ -21,7 +21,7 @@ A new router is only eligible to be added if it:
 $ go version
 go version go1.17.3 linux/amd64
 $ go list -m all | tail -n +2
-github.com/aofei/r2 v0.2.0
+github.com/aofei/r2 v0.2.1
 github.com/go-chi/chi/v5 v5.0.6
 github.com/gorilla/mux v1.8.0
 github.com/julienschmidt/httprouter v1.3.0
@@ -30,24 +30,24 @@ goos: linux
 goarch: amd64
 pkg: github.com/aofei/go-http-request-routing-benchmark
 cpu: AMD EPYC 7B12
-BenchmarkStatic_R2-8                        2470            483046 ns/op          771571 B/op       1727 allocs/op
-BenchmarkStatic_HttpRouter-8                2392            496707 ns/op          771562 B/op       1727 allocs/op
-BenchmarkStatic_Chi-8                       1798            601870 ns/op          842219 B/op       2199 allocs/op
-BenchmarkStatic_GorillaMux-8                 916           1285054 ns/op          930373 B/op       3150 allocs/op
-BenchmarkGitHubAPI_R2-8                     1434            896290 ns/op         1185408 B/op       3353 allocs/op
-BenchmarkGitHubAPI_HttpRouter-8             1460            838313 ns/op         1191237 B/op       3351 allocs/op
-BenchmarkGitHubAPI_Chi-8                    1233            976479 ns/op         1198183 B/op       3285 allocs/op
-BenchmarkGitHubAPI_GorillaMux-8              205           5365106 ns/op         1381143 B/op       4794 allocs/op
-BenchmarkGPlusAPI_R2-8                     24177             49746 ns/op           69814 B/op        198 allocs/op
-BenchmarkGPlusAPI_HttpRouter-8             25266             48744 ns/op           69906 B/op        198 allocs/op
-BenchmarkGPlusAPI_Chi-8                    21542             53183 ns/op           70456 B/op        193 allocs/op
-BenchmarkGPlusAPI_GorillaMux-8             13753             88778 ns/op           81167 B/op        282 allocs/op
-BenchmarkParseAPI_R2-8                     13122             92461 ns/op          136153 B/op        366 allocs/op
-BenchmarkParseAPI_HttpRouter-8             14160             87058 ns/op          135988 B/op        366 allocs/op
-BenchmarkParseAPI_Chi-8                    10000            103210 ns/op          140071 B/op        380 allocs/op
-BenchmarkParseAPI_GorillaMux-8              7861            172459 ns/op          159557 B/op        552 allocs/op
+BenchmarkStatic_R2-8                        2263            467981 ns/op          771567 B/op       1727 allocs/op
+BenchmarkStatic_HttpRouter-8                2138            502016 ns/op          771567 B/op       1727 allocs/op
+BenchmarkStatic_Chi-8                       2270            595992 ns/op          842220 B/op       2199 allocs/op
+BenchmarkStatic_GorillaMux-8                 926           1299767 ns/op          930387 B/op       3150 allocs/op
+BenchmarkGitHubAPI_R2-8                     1404            843452 ns/op         1185418 B/op       3353 allocs/op
+BenchmarkGitHubAPI_HttpRouter-8             1477            779844 ns/op         1191230 B/op       3351 allocs/op
+BenchmarkGitHubAPI_Chi-8                    1430            957265 ns/op         1198195 B/op       3285 allocs/op
+BenchmarkGitHubAPI_GorillaMux-8              225           5302534 ns/op         1381175 B/op       4794 allocs/op
+BenchmarkGPlusAPI_R2-8                     24033             47864 ns/op           69815 B/op        198 allocs/op
+BenchmarkGPlusAPI_HttpRouter-8             24322             46063 ns/op           69907 B/op        198 allocs/op
+BenchmarkGPlusAPI_Chi-8                    24082             49573 ns/op           70457 B/op        193 allocs/op
+BenchmarkGPlusAPI_GorillaMux-8             14078             86476 ns/op           81168 B/op        282 allocs/op
+BenchmarkParseAPI_R2-8                     13323             86371 ns/op          136155 B/op        366 allocs/op
+BenchmarkParseAPI_HttpRouter-8             13741             85138 ns/op          135988 B/op        366 allocs/op
+BenchmarkParseAPI_Chi-8                    12650             99532 ns/op          140073 B/op        380 allocs/op
+BenchmarkParseAPI_GorillaMux-8              6945            165118 ns/op          159560 B/op        552 allocs/op
 PASS
-ok      github.com/aofei/go-http-request-routing-benchmark      24.568s
+ok      github.com/aofei/go-http-request-routing-benchmark      25.313s
 ```
 
 ## Community
