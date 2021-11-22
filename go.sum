@@ -1,11 +1,5 @@
-github.com/aofei/r2 v0.2.0 h1:kXsYmNoptoWvMPazDP+qoXectaNx2M0Nvu15gZWHfDI=
-github.com/aofei/r2 v0.2.0/go.mod h1:iEHaCQDYveh0PaCqyfAr9CKdn2lR8kLpclrjtlSz/Iw=
-github.com/aofei/r2 v0.2.1 h1:EjwsyThff6uysGyDGpC02mhhp27MxLJF4VH8Euu8Ok0=
-github.com/aofei/r2 v0.2.1/go.mod h1:iEHaCQDYveh0PaCqyfAr9CKdn2lR8kLpclrjtlSz/Iw=
-github.com/aofei/r2 v0.2.2 h1:82jZzeklAuuh/cYzeY32q5AOBBMFoJNMez6b2qEzE7w=
-github.com/aofei/r2 v0.2.2/go.mod h1:iEHaCQDYveh0PaCqyfAr9CKdn2lR8kLpclrjtlSz/Iw=
-github.com/go-chi/chi/v5 v5.0.6 h1:CHIMAkr36TRf/zYvOqNKklMDxEm9HuqdiK+syK+tYtw=
-github.com/go-chi/chi/v5 v5.0.6/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
+github.com/aofei/r2 v0.3.0 h1:N5NsIjFc1vIdNu32DOTuz6qqMvAkTQ1m7kfJG0Iw/FM=
+github.com/aofei/r2 v0.3.0/go.mod h1:iEHaCQDYveh0PaCqyfAr9CKdn2lR8kLpclrjtlSz/Iw=
 github.com/go-chi/chi/v5 v5.0.7 h1:rDTPXLDHGATaeHvVlLcR4Qe0zftYethFucbjVQ1PxU8=
 github.com/go-chi/chi/v5 v5.0.7/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=

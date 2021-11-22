@@ -462,56 +462,30 @@ var (
 		{"PUT", "/1/users/:objectId"},
 	}
 
-	githubAPICurlyBracketRoutes []*route
-	gplusAPICurlyBracketRoutes  []*route
-	parseAPICurlyBracketRoutes  []*route
-
-	staticR2         = &r2.Router{}
-	staticHttpRouter = httprouter.New()
-	staticChi        = chi.NewMux()
-	staticGorillaMux = mux.NewRouter()
-
-	githubAPIR2         = &r2.Router{}
-	githubAPIHttpRouter = httprouter.New()
-	githubAPIChi        = chi.NewMux()
-	githubAPIGorillaMux = mux.NewRouter()
-
-	gplusAPIR2         = &r2.Router{}
-	gplusAPIHttpRouter = httprouter.New()
-	gplusAPIChi        = chi.NewMux()
-	gplusAPIGorillaMux = mux.NewRouter()
-
-	parseAPIR2         = &r2.Router{}
-	parseAPIHttpRouter = httprouter.New()
-	parseAPIChi        = chi.NewMux()
-	parseAPIGorillaMux = mux.NewRouter()
-)
-
-func init() {
 	githubAPICurlyBracketRoutes = curlyBracketRoutes(githubAPIRoutes)
-	gplusAPICurlyBracketRoutes = curlyBracketRoutes(gplusAPIRoutes)
-	parseAPICurlyBracketRoutes = curlyBracketRoutes(parseAPIRoutes)
+	gplusAPICurlyBracketRoutes  = curlyBracketRoutes(gplusAPIRoutes)
+	parseAPICurlyBracketRoutes  = curlyBracketRoutes(parseAPIRoutes)
 
-	loadR2Routes(staticR2, staticRoutes)
-	loadR2Routes(githubAPIR2, githubAPIRoutes)
-	loadR2Routes(gplusAPIR2, gplusAPIRoutes)
-	loadR2Routes(parseAPIR2, parseAPIRoutes)
+	staticR2         = r2Handler(staticRoutes)
+	staticHttpRouter = httprouterHandler(staticRoutes)
+	staticChi        = chiHandler(staticRoutes)
+	staticGorillaMux = gorillamuxHandler(staticRoutes)
 
-	loadHttpRouterRoutes(staticHttpRouter, staticRoutes)
-	loadHttpRouterRoutes(githubAPIHttpRouter, githubAPIRoutes)
-	loadHttpRouterRoutes(gplusAPIHttpRouter, gplusAPIRoutes)
-	loadHttpRouterRoutes(parseAPIHttpRouter, parseAPIRoutes)
+	githubAPIR2         = r2Handler(githubAPIRoutes)
+	githubAPIHttpRouter = httprouterHandler(githubAPIRoutes)
+	githubAPIChi        = chiHandler(githubAPICurlyBracketRoutes)
+	githubAPIGorillaMux = gorillamuxHandler(githubAPICurlyBracketRoutes)
 
-	loadChiRoutes(staticChi, staticRoutes)
-	loadChiRoutes(githubAPIChi, githubAPICurlyBracketRoutes)
-	loadChiRoutes(gplusAPIChi, gplusAPICurlyBracketRoutes)
-	loadChiRoutes(parseAPIChi, parseAPICurlyBracketRoutes)
+	gplusAPIR2         = r2Handler(gplusAPIRoutes)
+	gplusAPIHttpRouter = httprouterHandler(gplusAPIRoutes)
+	gplusAPIChi        = chiHandler(gplusAPICurlyBracketRoutes)
+	gplusAPIGorillaMux = gorillamuxHandler(gplusAPICurlyBracketRoutes)
 
-	loadGorillaMuxRoutes(staticGorillaMux, staticRoutes)
-	loadGorillaMuxRoutes(githubAPIGorillaMux, githubAPICurlyBracketRoutes)
-	loadGorillaMuxRoutes(gplusAPIGorillaMux, gplusAPICurlyBracketRoutes)
-	loadGorillaMuxRoutes(parseAPIGorillaMux, parseAPICurlyBracketRoutes)
-}
+	parseAPIR2         = r2Handler(parseAPIRoutes)
+	parseAPIHttpRouter = httprouterHandler(parseAPIRoutes)
+	parseAPIChi        = chiHandler(parseAPICurlyBracketRoutes)
+	parseAPIGorillaMux = gorillamuxHandler(parseAPICurlyBracketRoutes)
+)
 
 func curlyBracketRoutes(routes []*route) []*route {
 	cbrs := make([]*route, len(routes))
@@ -542,102 +516,126 @@ func curlyBracketRoutes(routes []*route) []*route {
 
 var handler = http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {})
 
-func loadR2Routes(router *r2.Router, routes []*route) {
+func r2Handler(routes []*route) http.Handler {
+	router := &r2.Router{}
 	for _, route := range routes {
 		router.Handle(route.method, route.path, handler)
 	}
+
+	return router
 }
 
-func loadHttpRouterRoutes(router *httprouter.Router, routes []*route) {
+func httprouterHandler(routes []*route) http.Handler {
+	router := httprouter.New()
 	for _, route := range routes {
 		router.Handler(route.method, route.path, handler)
 	}
+
+	return router
 }
 
-func loadChiRoutes(mux *chi.Mux, routes []*route) {
+func chiHandler(routes []*route) http.Handler {
+	router := chi.NewRouter()
 	for _, route := range routes {
-		mux.Method(route.method, route.path, handler)
+		router.Method(route.method, route.path, handler)
 	}
+
+	return router
 }
 
-func loadGorillaMuxRoutes(router *mux.Router, routes []*route) {
+func gorillamuxHandler(routes []*route) http.Handler {
+	router := mux.NewRouter()
 	for _, route := range routes {
 		router.Handle(route.path, handler).Methods(route.method)
 	}
+
+	return router
 }
 
-func benchmark(b *testing.B, h http.Handler, routes []*route) {
+func benchmark(b *testing.B, h http.Handler, req *http.Request, rs []*route) {
 	b.ReportAllocs()
+
+	if req == nil {
+		req = httptest.NewRequest("", "/", nil)
+	}
+
+	rec := httptest.NewRecorder()
+
 	for i := 0; i < b.N; i++ {
-		for _, r := range routes {
-			h.ServeHTTP(
-				httptest.NewRecorder(),
-				httptest.NewRequest(r.method, r.path, nil),
-			)
+		for _, r := range rs {
+			req.Method = r.method
+			req.RequestURI = r.path
+			req.URL.Path = r.path
+			req.URL.RawPath = r.path
+			h.ServeHTTP(rec, req)
 		}
 	}
 }
 
 func BenchmarkStatic_R2(b *testing.B) {
-	benchmark(b, staticR2, staticRoutes)
+	req := httptest.NewRequest("", "/", nil).WithContext(r2.Context())
+	benchmark(b, staticR2, req, staticRoutes)
 }
 
 func BenchmarkStatic_HttpRouter(b *testing.B) {
-	benchmark(b, staticHttpRouter, staticRoutes)
+	benchmark(b, staticHttpRouter, nil, staticRoutes)
 }
 
 func BenchmarkStatic_Chi(b *testing.B) {
-	benchmark(b, staticChi, staticRoutes)
+	benchmark(b, staticChi, nil, staticRoutes)
 }
 
 func BenchmarkStatic_GorillaMux(b *testing.B) {
-	benchmark(b, staticGorillaMux, staticRoutes)
+	benchmark(b, staticGorillaMux, nil, staticRoutes)
 }
 
 func BenchmarkGitHubAPI_R2(b *testing.B) {
-	benchmark(b, githubAPIR2, githubAPIRoutes)
+	req := httptest.NewRequest("", "/", nil).WithContext(r2.Context())
+	benchmark(b, githubAPIR2, req, githubAPIRoutes)
 }
 
 func BenchmarkGitHubAPI_HttpRouter(b *testing.B) {
-	benchmark(b, githubAPIHttpRouter, githubAPIRoutes)
+	benchmark(b, githubAPIHttpRouter, nil, githubAPIRoutes)
 }
 
 func BenchmarkGitHubAPI_Chi(b *testing.B) {
-	benchmark(b, githubAPIChi, githubAPICurlyBracketRoutes)
+	benchmark(b, githubAPIChi, nil, githubAPICurlyBracketRoutes)
 }
 
 func BenchmarkGitHubAPI_GorillaMux(b *testing.B) {
-	benchmark(b, githubAPIGorillaMux, githubAPICurlyBracketRoutes)
+	benchmark(b, githubAPIGorillaMux, nil, githubAPICurlyBracketRoutes)
 }
 
 func BenchmarkGPlusAPI_R2(b *testing.B) {
-	benchmark(b, gplusAPIR2, gplusAPIRoutes)
+	req := httptest.NewRequest("", "/", nil).WithContext(r2.Context())
+	benchmark(b, gplusAPIR2, req, gplusAPIRoutes)
 }
 
 func BenchmarkGPlusAPI_HttpRouter(b *testing.B) {
-	benchmark(b, gplusAPIHttpRouter, gplusAPIRoutes)
+	benchmark(b, gplusAPIHttpRouter, nil, gplusAPIRoutes)
 }
 
 func BenchmarkGPlusAPI_Chi(b *testing.B) {
-	benchmark(b, gplusAPIChi, gplusAPICurlyBracketRoutes)
+	benchmark(b, gplusAPIChi, nil, gplusAPICurlyBracketRoutes)
 }
 
 func BenchmarkGPlusAPI_GorillaMux(b *testing.B) {
-	benchmark(b, gplusAPIGorillaMux, gplusAPICurlyBracketRoutes)
+	benchmark(b, gplusAPIGorillaMux, nil, gplusAPICurlyBracketRoutes)
 }
 
 func BenchmarkParseAPI_R2(b *testing.B) {
-	benchmark(b, parseAPIR2, parseAPIRoutes)
+	req := httptest.NewRequest("", "/", nil).WithContext(r2.Context())
+	benchmark(b, parseAPIR2, req, parseAPIRoutes)
 }
 
 func BenchmarkParseAPI_HttpRouter(b *testing.B) {
-	benchmark(b, parseAPIHttpRouter, parseAPIRoutes)
+	benchmark(b, parseAPIHttpRouter, nil, parseAPIRoutes)
 }
 
 func BenchmarkParseAPI_Chi(b *testing.B) {
-	benchmark(b, parseAPIChi, parseAPICurlyBracketRoutes)
+	benchmark(b, parseAPIChi, nil, parseAPICurlyBracketRoutes)
 }
 
 func BenchmarkParseAPI_GorillaMux(b *testing.B) {
-	benchmark(b, parseAPIGorillaMux, parseAPICurlyBracketRoutes)
+	benchmark(b, parseAPIGorillaMux, nil, parseAPICurlyBracketRoutes)
 }
